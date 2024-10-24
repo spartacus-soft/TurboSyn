@@ -38,22 +38,22 @@ typedef struct {
 typedef void* TurboSynScanner;
 
 // 扫描成功回调
-typedef void (*TurboSuccessCallback)(
+typedef void (*TurboSynScanResultCallback)(
 	// 扫描结果
 	TurboSynScanResult scanResult,
 	// 用户自定义参数
 	void* userParam);
 
 // 扫描进度回调
-typedef void (*TurboProgressCallback)(
+typedef void (*TurboSynScanProgressCallback)(
 	// 扫描进度
 	TurboSynScanProgress scanProgress,
 	// 用户自定义参数
 	void* userParam);
 
 // 创建扫描器
-// 需要admin权限
-// 失败则返回NULL
+// 需要 admin 权限
+// 失败则返回 NULL
 extern "C" TurboSynScanner TurboSynCreateScanner(
 	// CIDR或IP地址文本内容，一行一条记录
 	const char* content);
@@ -64,11 +64,11 @@ extern "C" bool TurboSynStartScan(
 	TurboSynScanner scanner,
 	// TCP端口
 	int32_t port,
-	// 成功回调
-	TurboSuccessCallback successCallback,
+	// 结果回调
+	TurboSynScanResultCallback resultCallback,
 	// 进度回调
-	TurboProgressCallback progressCallback,
-	// callback的用户自定义参数
+	TurboSynScanProgressCallback progressCallback,
+	// callback 的用户自定义参数
 	void* userParam);
 
 // 取消扫描器的所有扫描任务
