@@ -12,8 +12,7 @@ namespace TurboSynSharp
 {
     /// <summary>
     /// TurboSync扫描
-    /// </summary>
-    [SupportedOSPlatform("windows")]
+    /// </summary>   
     public static partial class TurboSyn
     {
         /// <summary>
@@ -35,6 +34,7 @@ namespace TurboSynSharp
         /// <returns></returns>
         /// <exception cref="Win32Exception"></exception>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
+        [SupportedOSPlatform("windows")]
         public static async IAsyncEnumerable<IPAddress> ScanAsync(
             string? content,
             int port,
@@ -80,16 +80,17 @@ namespace TurboSynSharp
         {
             using (cancellationToken.Register(() => TurboSynCancelScan(hScanner)))
             {
-                unsafe
-                {
-                    var userParam = GCHandle.ToIntPtr(userParamGCHandle);
-                    TurboSynStartScan(hScanner, port, &OnResult, &OnProgress, userParam);
-                }
-
+                UnsafeTurboSynStartScan();
                 await foreach (var address in channelReader.ReadAllAsync(cancellationToken))
                 {
                     yield return address;
                 }
+            }
+
+            unsafe void UnsafeTurboSynStartScan()
+            {
+                var userParam = GCHandle.ToIntPtr(userParamGCHandle);
+                TurboSynStartScan(hScanner, port, &OnResult, &OnProgress, userParam);
             }
         }
 
@@ -101,8 +102,7 @@ namespace TurboSynSharp
             {
                 if (result.State == TurboSynScanState.Success)
                 {
-                    ReadOnlySpan<byte> span = result.IPAddress;
-                    var address = new IPAddress(span[..result.IPLength]);
+                    var address = new IPAddress(result.IPAddressByteSpan);
                     userParam.ChannelWriter.TryWrite(address);
                 }
                 else if (result.State == TurboSynScanState.Cancelled)
@@ -122,8 +122,7 @@ namespace TurboSynSharp
             var userParamGCHandle = GCHandle.FromIntPtr(param);
             if (userParamGCHandle.Target is UserParam userParam && userParam.ProgressChanged != null)
             {
-                ReadOnlySpan<byte> span = progress.IPAddress;
-                var address = new IPAddress(span[..progress.IPLength]);
+                var address = new IPAddress(progress.IPAddressByteSpan);
                 var scanProgress = new ScanProgress(progress.CurrentCount, progress.TotalCount, address);
                 userParam.ProgressChanged(scanProgress);
             }

@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace TurboSynSharp
@@ -18,6 +19,7 @@ namespace TurboSynSharp
             public int Port;
             public int IPLength;
             public Byte16 IPAddress;
+            public ReadOnlySpan<byte> IPAddressByteSpan => MemoryMarshal.CreateReadOnlySpan(ref IPAddress.Element0, IPLength);
         }
 
         private struct TurboSynScanProgress
@@ -26,19 +28,20 @@ namespace TurboSynSharp
             public ulong TotalCount;
             public int IPLength;
             public Byte16 IPAddress;
+            public ReadOnlySpan<byte> IPAddressByteSpan => MemoryMarshal.CreateReadOnlySpan(ref IPAddress.Element0, IPLength);
         }
 
         [InlineArray(16)]
         private struct Byte16
         {
-            private byte _;
+            public byte Element0;
         }
 
 
         private const string TurboSynLib = "TurboSyn.dll";
 
         [LibraryImport(TurboSynLib, SetLastError = true)]
-        private static unsafe partial nint TurboSynCreateScanner(
+        private static partial nint TurboSynCreateScanner(
             nint content);
 
         [LibraryImport(TurboSynLib, SetLastError = true)]

@@ -2,3 +2,5 @@
 .vs
 TurboSynSharp/bin
 TurboSynSharp/obj
+TurboSynSharp/Properties
+*.user
