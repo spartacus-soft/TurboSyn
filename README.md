@@ -1,5 +1,5 @@
 ### TurboSyn
-基于[WinDivert](https://github.com/basil00/WinDivert)的SYN扫描动态链接库。
+基于WinDivert的SYN扫描动态链接库。
 * 极快的扫描速度
 * 极低的CPU使用率
 * C导出动态链接库
