@@ -2,8 +2,11 @@
 
 // 扫描状态
 typedef enum {
+	// 成功扫描出一个IP
 	SUCCESS = 0,
+	// 扫描器任务已取消
 	CANCELLED = 1,
+	// 扫描器任务已完成
 	COMPLETED = 2,
 } TurboSynScanState;
 
@@ -27,7 +30,7 @@ typedef struct {
 	uint64_t TotalCount;
 	// 当前扫描的IP内容长度
 	int32_t IPLength;
-	// 当前扫描的I的内容
+	// 当前扫描的IP的内容
 	uint8_t IPAddress[16];
 } TurboSynScanProgress;
 
@@ -49,6 +52,7 @@ typedef void (*TurboProgressCallback)(
 	void* userParam);
 
 // 创建扫描器
+// 需要admin权限
 // 失败则返回NULL
 extern "C" TurboSynScanner TurboSynCreateScanner(
 	// CIDR或IP地址文本内容，一行一条记录
@@ -64,11 +68,15 @@ extern "C" bool TurboSynStartScan(
 	TurboSuccessCallback successCallback,
 	// 进度回调
 	TurboProgressCallback progressCallback,
-	// 用户自定义参数
+	// callback的用户自定义参数
 	void* userParam);
 
 // 取消扫描器的所有扫描任务
-extern "C" bool TurboSynCancelScan(TurboSynScanner scanner);
+extern "C" bool TurboSynCancelScan(
+	// 扫描器
+	TurboSynScanner scanner);
 
 // 释放扫描器
-extern "C" void TurboSynFreeScanner(TurboSynScanner scanner);
+extern "C" void TurboSynFreeScanner(
+	// 扫描器
+	TurboSynScanner scanner);
